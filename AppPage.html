@@ -7,27 +7,28 @@
     <script type="text/javascript" src="scripts/canvas2d/gl-matrix.js"></script>
     <script type="text/javascript" src="scripts/canvas2d/lab.js"></script>
     <script type="text/javascript" src="scripts/canvas2d/drawings.js"></script>
+    <link rel="stylesheet" type="text/css" href="data/main.css">
 
 </head>
 <body>
 <canvas id="mainCanvas" width="800" height="600" onload="drawImage">
     Ваш браузер не поддерживает элемент canvas
 </canvas>
-<div id="Stats">
-    <fieldset style="max-width: 380px">
-        <label for="xscale">X-scale
-            <input id="xscale" type="range" min="0" max="5" step="0.25" value="2">
-        </label>
-        <label for="yscale">Y-scale
-            <input id="yscale" type="range" min="0" max="5" step="0.25" value="2">
-        </label>
-        <label for="zscale">Z-scale
-            <input id="zscale" type="range" min="0" max="5" step="0.25" value="2">
-        </label>
-        <label for="speedConst">Speed
-            <input id="speedConst" type="range" min="0" max="5" step="0.1" value="0.5">
-        </label>
-    </fieldset>
+<div id="Stats" >
+
+    <label for="xscale">X-scale
+        <input id="xscale" type="range" min="0" max="5" step="0.25" value="2">
+    </label>
+    <label for="yscale">Y-scale
+        <input id="yscale" type="range" min="0" max="5" step="0.25" value="2">
+    </label>
+    <label for="zscale">Z-scale
+        <input id="zscale" type="range" min="0" max="5" step="0.25" value="2">
+    </label>
+    <label for="speedConst">Speed
+        <input id="speedConst" type="range" min="0" max="5" step="0.1" value="0.5">
+    </label>
+
     <button onclick="submitForm()" style="margin: 10px">Confirm</button>
 </div>
 </body>
