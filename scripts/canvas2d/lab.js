@@ -75,9 +75,9 @@ function rotate() {
         rotation = transformMatrix(rotation, getRz(speed * coefz));
         rotation = normalize(rotation);
         clearCanvas(context, canvas);
-        rotation = transformMatrix(rotation, getTransfer(300, 300, 0));
+        rotation = transformMatrix(rotation, getTransfer(250, 250, 0));
         drawIt(rotation, context);
-        rotation = transformMatrix(rotation, getTransfer(-300, -300, 0));
+        rotation = transformMatrix(rotation, getTransfer(-250, -250, 0));
 
     }, 60);
 
