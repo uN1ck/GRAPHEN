@@ -1,3 +1,5 @@
+var cube = null;
+
 window.onload = function initializeContext() {
 
     var container = document.createElement('div');
@@ -40,4 +42,10 @@ window.onload = function initializeContext() {
 
     container.appendChild(renderer.domElement);
     renderer.render(scene, camera);
+
 };
+
+
+function moveCamera() {
+    var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+}
