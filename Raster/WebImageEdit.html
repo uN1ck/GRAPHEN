@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ImageEdit</title>
+    <script type="text/javascript" src="scripts/imageModifier.js"></script>
+    <link rel="stylesheet" href="styles/WebImageEdit.css">
+</head>
+<body>
+<div class="ImageSpace">
+    <canvas id="ImageObject"></canvas>
+</div>
+<div class="Options">
+    <label for="Brightness"> Brightness</label>
+    <input type="range" id="Brightness" min="0" max="255" step="1" onchange="onChangeBrightness(value)">
+    <label for="Saturation"> Saturation</label>
+    <input type="range" id="Saturation" min="0" max="255" step="1" onchange="onChangeSaturation(value)">
+    <label for="Hue"> Hue</label>
+    <input type="range" id="Hue" min="0" max="255" step="1" onchange="onChangeHue(value)">
+</div>
+
+</body>
+</html>

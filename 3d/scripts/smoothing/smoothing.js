@@ -21,7 +21,7 @@ var stn = Math.sin(Math.atan(2.0)) / 2;
 var edges = [[0, 4, 5, 1], [0, 1, 2, 3], [0, 3, 7, 4], [5, 4, 7, 6], [1, 5, 6, 2], [2, 6, 7, 3]];
 
 
-var colors = [[0, 100, 255], [100, 255, 0], [255, 100, 0], [0, 255, 255], [255, 0, 255], [255, 255, 0]];
+var colors = [[0, 150, 255], [150, 255, 0], [255, 150, 0], [0, 255, 255], [255, 0, 255], [255, 255, 0]];
 
 
 var lightTemp = [];
@@ -319,8 +319,8 @@ $(function () {
         context = canvas.getContext('2d');
         imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         pixelsData = imageData.data;
-        center[0] = 200 / 2;
-        center[1] = 200 / 2;
+        center[0] = 250 / 2;
+        center[1] = 250 / 2;
         console.log(center);
         for (var i = 0; i < pointCount; i++) {
             cube3d.push({

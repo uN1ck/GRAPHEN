@@ -1,0 +1,12 @@
+.ImageSpace {
+    min-width: 300px;
+    min-height: 300px;
+    border: 1px solid;
+    border-radius: 15px;
+}
+
+.Options {
+    margin: 10px;
+    border: 1px solid;
+    border-radius: 15px;
+}
