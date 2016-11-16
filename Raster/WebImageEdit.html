@@ -3,21 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>ImageEdit</title>
+    <script type="text/javascript" src="scripts/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="scripts/imageModifier.js"></script>
     <link rel="stylesheet" href="styles/WebImageEdit.css">
 </head>
 <body>
-<div class="ImageSpace">
-    <canvas id="ImageObject"></canvas>
-</div>
-<div class="Options">
-    <label for="Brightness"> Brightness</label>
-    <input type="range" id="Brightness" min="0" max="255" step="1" onchange="onChangeBrightness(value)">
-    <label for="Saturation"> Saturation</label>
-    <input type="range" id="Saturation" min="0" max="255" step="1" onchange="onChangeSaturation(value)">
-    <label for="Hue"> Hue</label>
-    <input type="range" id="Hue" min="0" max="255" step="1" onchange="onChangeHue(value)">
-</div>
+<div class="Container">
+    <div class="Box" id="ImagePreviewerSpace">
+        <canvas id="ImagePreviewer" width="800" height="600"></canvas>
+    </div>
+    <div class="Box" id="GistogrammPreviewerSpace">
+        <canvas id="GistogrammPreviewer" width="300" height="256"></canvas>
+        <form>
+            <input type="radio" name="GistogrammType" value="Brightness"> Brightness
+            <input type="radio" name="GistogrammType" value="Saturation"> Saturation
+            <input type="radio" name="GistogrammType" value="Hue"> Hue
+            <input type="radio" name="GistogrammType" value="BrightnessNoHSV"> Brightness non-HSV
+        </form>
+    </div>
 
+    <div class="Box" id="Options">
+        <div class="InputRange">
+
+            <label for="Brightness">Brightness</label>
+            <input type="range" id="Brightness" min="0" max="255" step="1" onchange="onChangeBrightness(value)">
+        </div>
+        <div class="InputRange">
+            <label for="Saturation">Saturation</label>
+            <input type="range" id="Saturation" min="0" max="255" step="1" onchange="onChangeSaturation(value)">
+        </div>
+        <div class="InputRange">
+            <label for="Hue">Hue</label>
+            <input type="range" id="Hue" min="0" max="255" step="1" onchange="onChangeHue(value)">
+        </div>
+    </div>
+</div>
 </body>
 </html>
