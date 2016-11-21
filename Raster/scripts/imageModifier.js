@@ -1,27 +1,29 @@
 "use strict";
 
 class CanvasController {
-    average = [0, 0, 0, 0];
-    image;
-    canvas;
-    context;
-
-    constructor(canvas, imagesrc = null) {
+    constructor(canvas, imagesrc = null, canvasName) {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
         this.image = new Image();
+        this.average = [0, 0, 0, 0];
 
         if (imagesrc != null) {
             this.image.onload = function () {
-                this.canvas.width = this.image.width;
-                this.canvas.height = this.image.height;
-                this.context.drawImage(this.image, 0, 0);
-                this.originalData = getData(this.context);
+                ctx =
 
+                this.canvas.width = this.width;
+                this.canvas.height = this.height;
+                this.context.drawImage(this, 0, 0);
+                this.originalData = this.getData(this.context);
             };
             this.image.src = imagesrc;
+
         }
     }
+
+    onLoadImage() {
+
+    };
 
     getData() {
         return this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -89,8 +91,8 @@ class CanvasController {
 
 
 window.onload = function () {
-    let imageCanvas = canvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
-    let barChartCanvas = canvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
+    let imageCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
+    let barChartCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
 
     drawBarChart(imageCanvas)
 };
@@ -215,7 +217,7 @@ function onChange_noise(value) {
         var rand = (0.5 - Math.random()) * factor;
         return [r + rand, g + rand, b + rand, 255];
     }, value);
-    for (i = 0; i < Math.random() * value * 10 +; i++) {
+    for (i = 0; i < Math.random() * value * 10; i++) {
         imageContext.beginPath();
         imageContext.moveTo(Math.random() * imageCanvas.width, Math.random() * imageCanvas.height);
         imageContext.lineTo(Math.random() * imageCanvas.width, Math.random() * imageCanvas.height);
