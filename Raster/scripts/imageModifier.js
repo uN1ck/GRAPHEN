@@ -1,7 +1,8 @@
+//http://www.phpied.com/files/canvas/pixels.html
 "use strict";
 
 class CanvasController {
-    constructor(canvas, imagesrc = null, canvasName) {
+    constructor(canvas, imagesrc = null) {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
         this.image = new Image();
@@ -9,15 +10,12 @@ class CanvasController {
 
         if (imagesrc != null) {
             this.image.onload = function () {
-                ctx =
-
-                this.canvas.width = this.width;
-                this.canvas.height = this.height;
-                this.context.drawImage(this, 0, 0);
-                this.originalData = this.getData(this.context);
+                canvas.width = this.width;
+                canvas.height = this.height;
+                canvas.getContext('2d').drawImage(this, 0, 0);
+                //originalData = this.getData(this.context);
             };
             this.image.src = imagesrc;
-
         }
     }
 
@@ -92,7 +90,7 @@ class CanvasController {
 
 window.onload = function () {
     let imageCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
-    let barChartCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
+    let barChartCanvas = new CanvasController(document.getElementById("ImageCanvas"));
 
     drawBarChart(imageCanvas)
 };
@@ -100,8 +98,8 @@ window.onload = function () {
 
 function drawBarChart(barChartData, canvasController, width = 300, height = 300, color = "#FF0000") {
     let pos = 0;
-    barChartContext.clearRect(0, 0, width, height);
-    barChartContext.strokeStyle = color;
+    canvasController.context.clearRect(0, 0, width, height);
+    canvasController.context.strokeStyle = color;
     barChartData.forEach(function (item) {
         canvasController.context.beginPath();
         canvasController.context.moveTo(0, pos);
