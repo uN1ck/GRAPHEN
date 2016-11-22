@@ -1,4 +1,5 @@
 //http://www.phpied.com/files/canvas/pixels.html
+//http://esate.ru/uroki/OpenGL/uroki-OpenGL-c-sharp/primenenie-graficheskih-filtrov-opengl-vvedenie/
 "use strict";
 
 class CanvasController {
@@ -13,15 +14,11 @@ class CanvasController {
                 canvas.width = this.width;
                 canvas.height = this.height;
                 canvas.getContext('2d').drawImage(this, 0, 0);
-                //originalData = this.getData(this.context);
+
             };
             this.image.src = imagesrc;
         }
     }
-
-    onLoadImage() {
-
-    };
 
     getData() {
         return this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -33,9 +30,11 @@ class CanvasController {
 
     reset() {
         this.context.drawImage(this.image, 0, 0);
+        this.setAverages();
     }
 
     getPixelStatistics(operation) {
+        this.setAverages();
         let data = this.getData();
         let px = data.data;
         let len = px.length;
@@ -47,203 +46,268 @@ class CanvasController {
         let size = this.canvas.width * this.canvas.height;
 
         for (let i = 0; i < len; i += 4) {
-            let brightness = operation(px[0], px[i + 1], px[i + 2], px[i + 3]);
+            let brightness = operation(px[i], px[i + 1], px[i + 2], px[i + 3]);
             barChartData[brightness] += 1;
         }
         return barChartData;
     }
 
-    appendPixelOperation(operation, factor) {
+    appendOperation(operation, value) {
         let olddata = this.getData();
         let oldpx = olddata.data;
         let newdata = this.context.createImageData(olddata);
         let newpx = newdata.data;
-        let res = [];
+
+        let res = null;
         let len = newpx.length;
+        let width = this.canvas.scrollWidth;
+        let height = this.canvas.scrollHeight;
 
         for (let i = 0; i < len; i += 4) {
-            res = operation(oldpx[i], oldpx[i + 1], oldpx[i + 2], oldpx[i + 3], factor, i);
-            newpx[i] = res[0];
-            newpx[i + 1] = res[1];
-            newpx[i + 2] = res[2];
-            newpx[i + 3] = res[3];
+            res = operation(oldpx, value, i, width, height, this.average);
+            if (res != null) {
+                newpx[i] = res[0];
+                newpx[i + 1] = res[1];
+                newpx[i + 2] = res[2];
+                newpx[i + 3] = res[3];
+            }
         }
-        this.setData(imageContext, newdata);
+        this.setData(newdata);
+        alert("Operation DONE!");
     }
 
     setAverages() {
+        this.average = [0, 0, 0, 0];
         let data = this.getData();
         let px = data.data;
         let len = px.length;
-        let size = imageCanvas.width * imageCanvas.height;
+        let size = this.canvas.width * this.canvas.height;
 
         for (let i = 0; i < len; i += 4) {
-            averages[0] += px[i] / size;
-            averages[1] += px[i + 1] / size;
-            averages[2] += px[i + 2] / size;
-            averages[3] += px[i + 3] / size;
-
+            this.average[0] += px[i] / size;
+            this.average[1] += px[i + 1] / size;
+            this.average[2] += px[i + 2] / size;
+            this.average[3] += px[i + 3] / size;
         }
     }
 }
 
+/**
+ * ====================================================================================
+ */
+
+let imageCanvas;
+let barChartCanvas;
 
 window.onload = function () {
-    let imageCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
-    let barChartCanvas = new CanvasController(document.getElementById("ImageCanvas"));
-
-    drawBarChart(imageCanvas)
+    imageCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
+    barChartCanvas = new CanvasController(document.getElementById("BarChartCanvas"));
 };
 
+document.addEventListener("DOMcontentLoaded", function () {
+    drawBarChart(imageCanvas, barChartCanvas);
+});
 
-function drawBarChart(barChartData, canvasController, width = 300, height = 300, color = "#FF0000") {
+/**
+ * ====================================================================================
+ */
+
+function drawBarChart(imageCanvas, barChartCanvas, color = "#FF0000") {
     let pos = 0;
-    canvasController.context.clearRect(0, 0, width, height);
-    canvasController.context.strokeStyle = color;
-    barChartData.forEach(function (item) {
-        canvasController.context.beginPath();
-        canvasController.context.moveTo(0, pos);
-        canvasController.context.lineTo(item / 50, pos++);
-        canvasController.context.stroke();
+    barChartCanvas.context.clearRect(0, 0, barChartCanvas.canvas.width, barChartCanvas.canvas.height);
+    barChartCanvas.context.strokeStyle = color;
+    imageCanvas.getPixelStatistics(brightnessAverage).forEach(function (item) {
+        barChartCanvas.context.beginPath();
+        barChartCanvas.context.moveTo(0, pos);
+        barChartCanvas.context.lineTo(item / 50, pos++);
+        barChartCanvas.context.stroke();
     });
 }
 
-function brightnessAverage(r, g, b, a) {
-    return r * 0.229 + g * 0.586 + b * 0.114
+
+function uniformFileter(data, value, i, width, height, average) {
+
+    let N = value;
+    let X = i % width;
+    let Y = Math.floor(i / width);
+
+    let filtered = [data[i], data[i + 1], data[i + 2], data[i + 3]];
+
+    for (let x = 0; x < N * 4; x += 4) {
+        for (let y = 0; y < N * 4; y += 4) {
+            filtered[0] += data[x + y * width + i];
+            filtered[1] += data[x + y * width + 1 + i];
+            filtered[2] += data[x + y * width + 2 + i];
+            filtered[3] += data[x + y * width + 3 + i];
+        }
+    }
+
+    for (let k = 0; k < 4; k++)
+        filtered[k] /= N * N;
+
+    return filtered;
 }
 
-// function analyse(avgFunc) {
-//     let data = getData(imageContext);
-//     let px = data.data;
-//     let len = px.length;
-//     let barChartData = [];
-//
-//     for (let i = 0; i < 256; i++)
-//         barChartData[i] = 0
-//
-//     let size = imageCanvas.width * imageCanvas.height;
-//
-//     for (let i = 0; i < 256; i++)
-//         barChartData[i] = 0
-//
-//     for (let i = 0; i < len; i += 4) {
-//         let brightness = Math.round(avgFunc(px[0], px[i + 1], px[i + 2], px[i + 3]));
-//         barChartData[brightness] += 1;
-//     }
-//     drawBarChart(barChartData);
-// }
-//
-// function setAverages(avgFunc) {
-//     let data = getData(imageContext);
-//     let px = data.data;
-//     let len = px.length;
-//     let size = imageCanvas.width * imageCanvas.height;
-//
-//
-//     for (let i = 0; i < len; i += 4) {
-//         //
-//
-//         let brightness = Math.round(avgFunc(px[0], px[i + 1], px[i + 2], px[i + 3]));
-//         averages[0] += px[i] / size;
-//         averages[1] += px[i + 1] / size;
-//         averages[2] += px[i + 2] / size;
-//         averages[3] += px[i + 3] / size;
-//
-//     }
-// }
-//
-//
-// getData = function (context) {
-//     return context.getImageData(0, 0, imageCanvas.width, imageCanvas.height);
-// };
-//
-// setData = function (context, data) {
-//     return context.putImageData(data, 0, 0);
-// };
-//
-// reset = function () {
-//     imageContext.drawImage(originalImage, 0, 0, originalImage.width, originalImage.height);
-//     originalData = getData(imageContext);
-// };
+function medianFileter(data, value, i, width, height, average) {
 
-function transform(fn, factor) {
-    let olddata = originalData;
-    let oldpx = olddata.data;
-    let newdata = imageContext.createImageData(olddata);
-    let newpx = newdata.data;
-    let res = [];
-    let len = newpx.length;
-    for (let i = 0; i < len; i += 4) {
-        res = fn(oldpx[i], oldpx[i + 1], oldpx[i + 2], oldpx[i + 3], factor, i);
-        newpx[i] = res[0];
-        newpx[i + 1] = res[1];
-        newpx[i + 2] = res[2];
-        newpx[i + 3] = res[3];
+    let N = value;
+    let X = i % width;
+    let Y = Math.floor(i / width);
+
+    let filtered = [[], [], [], []];
+
+    for (let x = 0; x < N * 4; x += 4) {
+        for (let y = 0; y < N * 4; y += 4) {
+            filtered[0].push(data[x + y * width + i]);
+            filtered[1].push(data[x + y * width + 1 + i]);
+            filtered[2].push(data[x + y * width + 2 + i]);
+            filtered[3].push(data[x + y * width + 3 + i]);
+        }
     }
-    setData(imageContext, newdata);
-    analyse(brightnessAverage);
+
+    for (let k = 0; k < 4; k++)
+        filtered[k].sort();
+
+
+    return [filtered[0][Math.round(filtered[0].length / 2)], filtered[1][Math.round(filtered[1].length / 2)], filtered[2][Math.round(filtered[2].length / 2)], filtered[3][Math.round(filtered[3].length / 2)]];
+}
+
+function sharpen(data, value, i, width, height, average) {
+    let N = 3;
+    let X = i % width;
+    let Y = Math.floor(i / width);
+    let coef = 1.8;
+    let filtered = [0, 0, 0, data[3 + i]];
+
+    for (let x = 0; x < N * 4; x += 4) {
+        for (let y = 0; y < N * 4; y += 4) {
+            if (x == 4 && y == 4) coef = 1.8;
+            else coef = -0.1;
+            filtered[0] += coef * data[x + y * width + i];
+            filtered[1] += coef * data[x + y * width + 1 + i];
+            filtered[2] += coef * data[x + y * width + 2 + i];
+        }
+    }
+
+    return filtered;
+}
+
+function onClick_sharpen() {
+    imageCanvas.appendOperation(sharpen, 0);
+    drawBarChart(imageCanvas, barChartCanvas);
+}
+
+function brightnessAverage(r, g, b, a) {
+    return Math.round(r * 0.229 + g * 0.586 + b * 0.114);
 }
 
 function onChange_gamma(value) {
-    transform(function (r, g, b, a, factor, index) {
-        return [
-            Math.pow(r / 255, factor) * 255,
-            Math.pow(g / 255, factor) * 255,
-            Math.pow(b / 255, factor) * 255,
-            255
-        ];
-    }, value)
+    imageCanvas.reset();
+    imageCanvas.appendOperation(function (oldpx, value, i, width, height, average) {
+        let r = oldpx[i];
+        let g = oldpx[i + 1];
+        let b = oldpx[i + 2];
+        let a = oldpx[i + 3];
+        return [Math.pow(r / 255, value) * 255, Math.pow(g / 255, value) * 255, Math.pow(b / 255, value) * 255, a];
+    }, value);
+    drawBarChart(imageCanvas, barChartCanvas);
 }
 
 function onChange_contrast(value) {
-    transform(function (r, g, b, a, factor, index) {
-        r = factor * (r - averages[0]) + averages[0];
+    imageCanvas.reset();
+    imageCanvas.appendOperation(function (oldpx, value, i, width, height, average) {
+        let r = oldpx[i];
+        let g = oldpx[i + 1];
+        let b = oldpx[i + 2];
+        let a = oldpx[i + 3];
+
+        r = value * (r - average[0]) + average[0];
         if (r > 255) r = 255;
         if (r < 0) r = 0;
-        g = factor * (g - averages[1]) + averages[1];
+        g = value * (g - average[1]) + average[1];
         if (g > 255) g = 255;
         if (g < 0) g = 0;
-        b = factor * (b - averages[2]) + averages[2];
+        b = value * (b - average[2]) + average[2];
         if (b > 255) b = 255;
         if (b < 0) b = 0;
-        return [r, g, b, 255];
-    }, value)
+        return [r, g, b, a];
+    }, value);
+    drawBarChart(imageCanvas, barChartCanvas);
 }
 
 function onChange_noise(value) {
-    transform(function (r, g, b, a, factor, index) {
-        var rand = (0.5 - Math.random()) * factor;
-        return [r + rand, g + rand, b + rand, 255];
+    imageCanvas.reset();
+    imageCanvas.appendOperation(function (oldpx, value, i, width, height, average) {
+        let rand = (0.5 - Math.random()) * value;
+        let r = oldpx[i];
+        let g = oldpx[i + 1];
+        let b = oldpx[i + 2];
+        let a = oldpx[i + 3];
+        return [r + rand, g + rand, b + rand, a];
     }, value);
-    for (i = 0; i < Math.random() * value * 10; i++) {
-        imageContext.beginPath();
-        imageContext.moveTo(Math.random() * imageCanvas.width, Math.random() * imageCanvas.height);
-        imageContext.lineTo(Math.random() * imageCanvas.width, Math.random() * imageCanvas.height);
-        imageContext.stroke();
-    }
 
+    for (let i = 0; i < Math.random() * value * 10; i++) {
+        imageCanvas.context.beginPath();
+        imageCanvas.context.moveTo(Math.random() * imageCanvas.canvas.width, Math.random() * imageCanvas.canvas.height);
+        imageCanvas.context.lineTo(Math.random() * imageCanvas.canvas.width, Math.random() * imageCanvas.canvas.height);
+        imageCanvas.context.stroke();
+    }
+    drawBarChart(imageCanvas, barChartCanvas);
 }
 
 function onClick_reset(value) {
-    reset();
+    imageCanvas.reset();
+    drawBarChart(imageCanvas, barChartCanvas);
 }
 
 function onClick_negtive(value) {
-    transform(function (r, g, b, a, factor, index) {
-        return [255 - r, 255 - g, 255 - b, 255];
-    }, value)
+    imageCanvas.reset();
+    imageCanvas.appendOperation(function (oldpx, value, i, width, height, average) {
+        let r = oldpx[i];
+        let g = oldpx[i + 1];
+        let b = oldpx[i + 2];
+        let a = oldpx[i + 3];
+        return [255 - r, 255 - g, 255 - b, a];
+    }, value);
+    drawBarChart(imageCanvas, barChartCanvas);
 }
+
 function onChange_binarize(value) {
-    transform(function (r, g, b, a, factor, index) {
+    imageCanvas.reset();
+    imageCanvas.appendOperation(function (oldpx, value, i, width, height, average) {
+        let r = oldpx[i];
+        let g = oldpx[i + 1];
+        let b = oldpx[i + 2];
+        let a = oldpx[i + 3];
         if (brightnessAverage(r, g, b, a) > value)
             return [255, 255, 255, 255];
         else
             return [0, 0, 0, 255];
-    }, value)
+    }, value);
+    drawBarChart(imageCanvas, barChartCanvas);
+}
 
+function onChange_uniformFilter(value) {
+    imageCanvas.appendOperation(uniformFileter, value);
+    drawBarChart(imageCanvas, barChartCanvas);
+}
+
+function onChange_medianFilter(value) {
+    imageCanvas.appendOperation(medianFileter, value);
+    drawBarChart(imageCanvas, barChartCanvas);
+}
+
+function onClick_aquaFilter(value) {
+    imageCanvas.reset();
+    imageCanvas.appendOperation(uniformFileter, 3);
+    imageCanvas.appendOperation(sharpen, value);
+    drawBarChart(imageCanvas, barChartCanvas);
 }
 
 //
+// let x = i % width;
+// let y = Math.floor(i / width);
+
 // var manipuladors = [
 //     {
 //         name: 'rgb -> brg',

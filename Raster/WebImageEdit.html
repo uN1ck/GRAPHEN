@@ -1,37 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <title>image fun</title>
+    <link href="style.css" rel="stylesheet">
     <script type="text/javascript" src="scripts/tinyColor.js"></script>
     <script type="text/javascript" src="scripts/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" src="scripts/imageModifier.js"></script>
-    <style>
-        .bg {
-            padding: 30px;
-            display: inline-block;
-            float: left;
-        }
-    </style>
 </head>
 <body>
-<div class="bg">
-    <canvas id="ImageCanvas"></canvas>
-    <canvas id="BarChartCanvas" width="300" height="256" style="transform: rotate(270deg);"></canvas>
+<div class="container">
+    <div id="imageDiv" class="block">
+        <canvas id="ImageCanvas"></canvas>
+    </div>
+    <div id="barChartDiv" class="block">
+        <canvas id="BarChartCanvas" width="300" height="256"></canvas>
+    </div>
 </div>
-<div id="fn" style="float: left">
+<div class="buttons">
     <input type="button" id="Reset" onclick="onClick_reset()" value="Reset">
     <label for="Contrast">Contrast</label>
     <input type="range" min="1" max="25" value="1" step="1" id="Contrast" onchange="onChange_contrast(value)">
     <label for="Contrast">Gamma</label>
     <input type="range" min="1" max="10" step="1" value="1" id="Gamma" onchange="onChange_gamma(value)">
     <label for="Contrast">Noise</label>
-    <input type="range" min="0" max="255" id="Noise" onchange="onChange_noise(value)">
+    <input type="range" min="0" max="600" id="Noise" onchange="onChange_noise(value)">
     <input type="button" id="Negative" onclick="onClick_negtive()" value="Negative">
     <input type="range" min="0" max="255" id="BinarizeValue" onchange="onChange_binarize(value)">
+    <label for="uniformFilter">Uniform filter</label>
+    <input type="range" min="1" max="10" step="1" value="1" id="uniformFilter" onchange="onChange_uniformFilter(value)">
+
+    <label for="uniformFilter">Median filter</label>
+    <input type="range" min="1" max="10" step="1" value="1" id="medianFilter" onchange="onChange_medianFilter(value)">
+    <input type="button" id="Sharpen" onclick="onClick_sharpen()" value="Sharpen">
+    <input type="button" id="Aqua" onclick="onClick_aquaFilter()" value="Aquarel">
 </div>
 
-
 </body>
-
 </html>
