@@ -1,0 +1,39 @@
+.container {
+
+}
+
+.block {
+    display: inline-block;
+    margin: 5px;
+}
+
+#imageDiv {
+    min-width: 600px;
+    min-height: 400px;
+    padding: 5px;
+    border: rgba(150, 150, 150, 255);
+    border-width: 2px;
+    border-style: solid;
+}
+
+#imageDiv#imagecanvas {
+
+}
+
+#barChartDiv {
+    padding: 5px;
+    border: rgba(150, 150, 150, 255);
+    border-width: 2px;
+    border-style: solid;
+}
+
+#barChartDiv#barchartcanvas {
+    transform: rotate(270deg);
+}
+
+.buttons {
+    margin: 5px;
+    border: rgba(150, 150, 150, 0);
+    border-width: 2px;
+    border-radius: 15px;
+}

@@ -101,7 +101,7 @@ let barChartCanvas;
 
 window.onload = function () {
     imageCanvas = new CanvasController(document.getElementById("ImageCanvas"), "originalImage.jpg");
-    barChartCanvas = new CanvasController(document.getElementById("BarChartCanvas"));
+    //barChartCanvas = new CanvasController(document.getElementById("BarChartCanvas"));
 };
 
 document.addEventListener("DOMcontentLoaded", function () {
@@ -454,3 +454,4 @@ function onClick_aquaFilter(value) {
 //     }
 // ];
 //
+
